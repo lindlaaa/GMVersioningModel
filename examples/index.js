@@ -3,6 +3,7 @@
  ***********************/
 
 var myTemplateConfig = {
+  orientation: "vertical-reverse",
   colors: ["#F00", "#0F0", "#00F"], // branches colors, 1 per column
   branch: {
     lineWidth: 8,
@@ -18,12 +19,13 @@ var myTemplateConfig = {
       lineDash: [4]
     },
     message: {
+      display: true,
       displayAuthor: true,
-      displayBranch: false,
+      displayBranch: true,
       displayHash: false,
       font: "normal 12pt Arial"
     },
-    shouldDisplayTooltipsInCompactMode: false, // default = true
+    shouldDisplayTooltipsInCompactMode: true, // default = true
     tooltipHTMLFormatter: function (commit) {
       return "<b>" + commit.sha1 + "</b>" + ": " + commit.message;
     }
@@ -36,7 +38,7 @@ var myTemplate = new GitGraph.Template(myTemplateConfig);
  ***********************/
 
 var config = {
-  template: "blackarrow", // could be: "blackarrow" or "metro" or `myTemplate` (custom Template object)
+  template: "metro", // could be: "blackarrow" or "metro" or `myTemplate` (custom Template object)
   reverseArrow: false, // to make arrows point to ancestors, if displayed
   orientation: "vertical",
   // mode: "compact" // special compact mode: hide messages & compact graph
@@ -48,177 +50,224 @@ var gitGraph = new GitGraph(config);
  ************************/
 
 // Create branch named "master"
-var master = gitGraph.branch("master");
-
-// Commit on HEAD Branch which is "master"
-gitGraph.commit("Initial commit");
-
-// Add few commits on master
-gitGraph.commit("My second commit").commit("Add awesome feature");
-
-// Create a new "dev" branch from "master" with some custom configuration
-var dev = master.branch({
-  name: "dev",
-  color: "#F00",
-  // lineDash: [5],
+var master = gitGraph.branch({
+  name: "master",
+  column: 3, 
+  color: "#17BEBB",
   commitDefaultOptions: {
-    color: "#F00"
+    dotColor: "black",
+    messageColor: "#17BEBB",
+    tagColor: "#17BEBB"
   }
-});
-dev.commit("Youhou \\o/");
+  });
 
-// Commit again on "master"
-master.commit("I'm the master !");
-
-// Advanced commit method with style and specific author (HEAD)
-var commitConfig = {
-  dotColor: "white",
-  dotSize: 10,
-  dotStrokeWidth: 10,
-  messageHashDisplay: false,
-  messageAuthorDisplay: true,
-  message: "Alors c'est qui le papa ?",
-  tooltipDisplay: false,
-  author: "Me <me@planee.fr>"
-};
-gitGraph.commit(commitConfig);
-
-// Create another from "master"
-var feature3 = master.branch("feature3")
-feature3.commit().commit();
-
-/***********************
- *      CHECKOUT       *
- ***********************/
-
-// Checkout to create "test" from "master" branch
-// master.checkout();
-
-/***********************
- *       DETAILS       *
- ***********************/
-
-var commitWithDetailsConfig = {
-  message: "A commit with detailed message",
-  detailId: "detail"
-};
-gitGraph.commit(commitWithDetailsConfig).commit();
-dev.commit().commit(); // 2 default commits on "dev"
-
-/***********************
- *    CUSTOMIZATION    *
- ***********************/
-
-gitGraph.author = "Fabien0102 <fabien0102@planee.fr>";
-master.commit();
-
-/***********************
- *       MERGES        *
- ***********************/
-
-master.checkout();
-
-// Merge "dev" branch into HEAD (which is "master"), with a default message
-dev.merge();
-
-// Create a "test" branch and merge it into "master" with a custom message and tag
-var test = gitGraph.branch("test");
-test.commit("Final commit");
-test.merge(master, "My special merge commit message");
-
-// Then, continue committing on the "test" branch
-test.commit({
-  message: "It works !"
-});
-
-var fastForwardBranch = test.branch("fast-forward");
-fastForwardBranch.commit("First commit on FF branch");
-fastForwardBranch.commit("Second commit on FF branch");
-
-// If not commented, it will prevent fast-forward
-// test.commit("Make Fast Forward impossible");
-
-fastForwardBranch.merge(test, {
-  fastForward: true
-});
-
-/***********************
- *        TAGS         *
- ***********************/
-
-// Add a tag to a commit
-test.commit({
-  message: "Here you can see something",
-  tag: "a-tag"
-});
-
-// Don't display tag box
-test.commit({
-  message: "Here is a fresh new tag",
-  tag: "my-tag",
+master.commit({
+  tag: "1.0.0",
   displayTagBox: false
 });
 
-// Tag current HEAD
-test.commit("Tag this commit").tag("b-tag");
-gitGraph
-  .commit("This one has no tag")
-  .commit("Tag this one")
-  .tag({
-    tag: "c-tag",
-    tagColor: "green",
-    displayTagBox: false
-  });
-
-// Perform a merge, with a tag
-test.merge(master, {
-  message: "New release",
-  tag: "v1.0.0"
-});
-
-// Create different branches from an empty one and do some commits
-var features = master.branch("features")
-var feature1 = features.branch("feature1")
-var feature2 = features.branch("feature2")
-feature2.commit().commit();
-feature1.commit();
-
-/***********************
- *       EVENTS        *
- ***********************/
-
-gitGraph.canvas.addEventListener("graph:render", function (event) {
-  console.log(event.data.id, "has been rendered with a scaling factor of", gitGraph.scalingFactor);
-});
-
-gitGraph.canvas.addEventListener("commit:mouseover", function (event) {
-  console.log("You're over a commit.", "Here is a bunch of data ->", event.data);
-  this.style.cursor = "pointer";
-});
-
-gitGraph.canvas.addEventListener("commit:mouseout", function (event) {
-  console.log("You just left this commit ->", event.data);
-  this.style.cursor = "auto";
-});
-
-// Attach a handler to the commit
-test.commit({
-  message: "Click me!",
-  author: "Nicolas <me@planee.fr>",
-  onClick: function (commit, isOverCommit, event) {
-    console.log("You just clicked my commit.", commit, event);
+let develop = master.branch({
+  name: "develop",
+  column: 4,
+  color: "#E0CA3C",
+  commitDefaultOptions: {
+    dotColor: "black",
+    tagColor: "#E0CA3C",
+    messageColor: "#E0CA3C",
   }
 });
 
-// Display WIP-like commit
-test
+develop.commit({
+  tag: "1.0.0",
+  displayTagBox: false,
+});
+
+let feature1 = develop.branch({
+  name: "feature/1",
+  column: 6,
+  color: "#CA61C3",
+  commitDefaultOptions: {
+    dotColor: "black",
+    messageColor: "#CA61C3",
+    tagColor: "#CA61C3",
+  }
+});
+let feature2 = develop.branch({
+  name: "feature/2",
+  column: 7,
+  color: "#CA61C3",
+  commitDefaultOptions: {
+    dotColor: "black",
+    messageColor: "#CA61C3",
+    tagColor: "#CA61C3",
+  }
+});
+
+feature1
+  .commit({
+    color: "orange",
+    tag: "1.0.0",
+    displayTagBox: false,
+  })
+  .commit({
+    color: "orange",
+    tag: "1.0.0",
+    displayTagBox: false,
+  })
+
+feature2.commit({
+  color: "orange",
+  tag: "1.0.0",
+  displayTagBox: false,
+})
+
+feature1.merge(develop, {
+  tag: "1.1.0",
+})
+
+develop.merge(feature2, {
+  color: "orange",
+  message: "Backpull updated develop into feature.",
+  tag: "1.1.0",
+  displayTagBox: false,
+})
+let release1 = develop.branch({
+  name: "release/v1.1.0",
+  column: 5,
+  color: "#4CB944",
+  commitDefaultOptions: {
+    dotColor: "black",
+    messageColor: "#4CB944",
+  }
+});
+release1.commit({
+  lineDash: [3, 2],
+  dotStrokeWidth: 5,
+  dotColor: "white",
+  tag: "1.1.0",
+  displayTagBox: false,
+  message: "Testing for release v1.0.1",
+});
+release1.merge(master, {
+  tag: "v1.1.0",
+  fastForward: true,
+});
+
+let feature3 = develop.branch({
+  name: "feature/3",
+  column: 8,
+  color: "#CA61C3",
+  commitDefaultOptions: {
+    dotColor: "black",
+    messageColor: "#CA61C3",
+  },
+});
+
+feature3
+  .commit({
+    color: "orange",
+    tag: "1.1.0",
+    displayTagBox: false,
+  })
+  .commit({
+    color: "orange",
+    tag: "1.1.0",
+    displayTagBox: false,
+  })
+
+
+feature3.merge(develop, {
+  tag: "1.2.0",
+})
+develop.merge(feature2, {
+  color: "orange",
+  message: "Backpull updated develop into feature.",
+  tag: "1.2.0",
+  displayTagBox: false,
+})
+
+let release2 = develop.branch({
+  name: "release/v1.2.0",
+  column: 4,
+  color: "#4CB944",
+  column: release1.column,
+  commitDefaultOptions: {
+    dotColor: "black",
+    tagColor: "#4CB944",
+    messageColor: "#4CB944",
+  },
+})
+
+release2
   .commit({
     lineDash: [3, 2],
     dotStrokeWidth: 5,
     dotColor: "white",
-    messageHashDisplay: false,
-    messageAuthorDisplay: false,
-    message: "Current WIP",
-    tag: "HEAD",
-    displayTagBox: false
+    tag: "1.2.0",
+    displayTagBox: false,
+    message: "Testing for release v1.2.0",
   });
+
+release2.merge(master, {
+  tag: "1.2.0",
+  displayTagBox: false,
+});
+
+let prodution1 = master.branch({
+  name: "production/v1.2.0",
+  column: 2,
+  color: "#E55934",
+  commitDefaultOptions: {
+    dotColor: "black",
+    messageColor: "#E55934",
+    tagColor: "#E55934",
+  }
+})
+prodution1.commit({
+  lineDash: [3, 2],
+  color: "red",
+  tag: "1.2.0",
+  displayTagBox: false,
+  message: "Testing for release v1.2.0",
+});
+
+let hotfix1 = prodution1.branch({
+  name: "hotfix/1.2.1",
+  column: 1,
+  color: "red",
+  commitDefaultOptions: {
+    dotColor: "black",
+    messageColor: "red",
+    tagColor: "red",
+  },
+});
+hotfix1.commit({
+  message: "Hotfix for production version 1.2",
+  tag: "1.2.1",
+});
+hotfix1.merge(prodution1, {
+  message: "Merge hotfix/1.2.1 into production/1.2.0",
+  tag: "v1.2.1",
+});
+prodution1.merge(master, {
+  message: "Merge production/1.2.1 into master.",
+  tag: "v1.2.1",
+});
+master.merge(develop, {
+  message: "Merge master into develop.",
+  tag: "1.2.1",
+  displayTagBox: false,
+});
+develop.merge(feature2, {
+  message: "Merge develop into feature/2.",
+  tag: "1.2.1",
+  displayTagBox: false,
+})
+
+feature2
+  .commit({
+    lineDash: [3, 2],
+    dotColor: "white",
+    dotStrokeWidth: 5,
+    message: "Unfinished feature branch."
+  })

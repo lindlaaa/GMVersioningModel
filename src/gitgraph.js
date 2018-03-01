@@ -24,7 +24,7 @@
     // Options
     options = _isObject(options) ? options : {};
     this.elementId = (typeof options.elementId === "string") ? options.elementId : "gitGraph";
-    this.author = (typeof options.author === "string") ? options.author : "Sergio Flores <saxo-guy@epic.com>";
+    this.author = (typeof options.author === "string") ? options.author : "no-author";
     this.reverseArrow = _booleanOptionOr(options.reverseArrow, false);
 
     // Template management
@@ -882,7 +882,7 @@
     if (typeof commitOptions !== "object") {
       var message = commitOptions;
       commitOptions = {};
-      commitOptions.message = (typeof message === "string") ? message : defaultMessage;
+      commitOptions.message = (typeof message === "string") ? message : "";
     } else {
       commitOptions.message = commitOptions.message || defaultMessage;
     }
@@ -1081,16 +1081,16 @@
     this.template = this.parent.template;
     this.context = this.parent.context;
     this.branch = options.branch;
-    this.author = options.author || this.parent.author;
+    this.author = options.author || "no-author";
     this.date = options.date || new Date().toUTCString();
     this.detail = options.detail || null;
     this.sha1 = options.sha1 || (Math.random(100)).toString(16).substring(3, 10);
-    this.message = options.message || "He doesn't like George Michael! Boooo!";
+    this.message = options.message || "";
     this.arrowDisplay = options.arrowDisplay;
-    this.messageDisplay = _booleanOptionOr(options.messageDisplay, this.template.commit.message.display);
-    this.messageAuthorDisplay = _booleanOptionOr(options.messageAuthorDisplay, this.template.commit.message.displayAuthor);
-    this.messageBranchDisplay = _booleanOptionOr(options.messageBranchDisplay, this.template.commit.message.displayBranch);
-    this.messageHashDisplay = _booleanOptionOr(options.messageHashDisplay, this.template.commit.message.displayHash);
+    this.messageDisplay = true;
+    this.messageAuthorDisplay = false;
+    this.messageBranchDisplay = true;
+    this.messageHashDisplay = true;
     this.messageColor = options.messageColor || options.color;
     this.messageFont = options.messageFont || this.template.commit.message.font;
     this.dotColor = options.dotColor || options.color;
