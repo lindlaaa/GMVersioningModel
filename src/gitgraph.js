@@ -1087,7 +1087,7 @@
     this.sha1 = options.sha1 || (Math.random(100)).toString(16).substring(3, 10);
     this.message = options.message || "";
     this.arrowDisplay = options.arrowDisplay;
-    this.messageDisplay = true;
+    this.messageDisplay = false;
     this.messageAuthorDisplay = false;
     this.messageBranchDisplay = true;
     this.messageHashDisplay = true;

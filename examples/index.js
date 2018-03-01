@@ -40,7 +40,7 @@ var myTemplate = new GitGraph.Template(myTemplateConfig);
 var config = {
   template: "metro", // could be: "blackarrow" or "metro" or `myTemplate` (custom Template object)
   reverseArrow: false, // to make arrows point to ancestors, if displayed
-  orientation: "vertical",
+  orientation: "horizontal",
   // mode: "compact" // special compact mode: hide messages & compact graph
 };
 var gitGraph = new GitGraph(config);
@@ -61,10 +61,7 @@ var master = gitGraph.branch({
   }
   });
 
-master.commit({
-  tag: "1.0.0",
-  displayTagBox: false
-});
+master.commit();
 
 let develop = master.branch({
   name: "develop",
@@ -79,7 +76,7 @@ let develop = master.branch({
 
 develop.commit({
   tag: "1.0.0",
-  displayTagBox: false,
+  displayTagBox: true,
 });
 
 let feature1 = develop.branch({
@@ -106,33 +103,24 @@ let feature2 = develop.branch({
 feature1
   .commit({
     color: "orange",
-    tag: "1.0.0",
     displayTagBox: false,
   })
   .commit({
     color: "orange",
-    tag: "1.0.0",
     displayTagBox: false,
   })
 
 feature2.commit({
   color: "orange",
-  tag: "1.0.0",
   displayTagBox: false,
 })
 
 feature1.merge(develop, {
-  tag: "1.1.0",
+  tag: "2.0.0",
 })
 
-develop.merge(feature2, {
-  color: "orange",
-  message: "Backpull updated develop into feature.",
-  tag: "1.1.0",
-  displayTagBox: false,
-})
 let release1 = develop.branch({
-  name: "release/v1.1.0",
+  name: "release/v2.0.0",
   column: 5,
   color: "#4CB944",
   commitDefaultOptions: {
@@ -144,50 +132,32 @@ release1.commit({
   lineDash: [3, 2],
   dotStrokeWidth: 5,
   dotColor: "white",
-  tag: "1.1.0",
+  tag: "2.0.0",
   displayTagBox: false,
   message: "Testing for release v1.0.1",
 });
 release1.merge(master, {
-  tag: "v1.1.0",
+  tag: "v2.0.0",
   fastForward: true,
 });
-
-let feature3 = develop.branch({
-  name: "feature/3",
-  column: 8,
-  color: "#CA61C3",
-  commitDefaultOptions: {
-    dotColor: "black",
-    messageColor: "#CA61C3",
-  },
-});
-
-feature3
-  .commit({
-    color: "orange",
-    tag: "1.1.0",
-    displayTagBox: false,
-  })
-  .commit({
-    color: "orange",
-    tag: "1.1.0",
-    displayTagBox: false,
-  })
-
-
-feature3.merge(develop, {
-  tag: "1.2.0",
-})
 develop.merge(feature2, {
   color: "orange",
   message: "Backpull updated develop into feature.",
-  tag: "1.2.0",
   displayTagBox: false,
 })
 
+feature2.commit({
+  color: "orange",
+  displayTagBox: false,
+})
+
+feature2.merge(develop, {
+  message: "Merge feature/2 into develop.",
+  tag: "2.1.0",
+})
+
 let release2 = develop.branch({
-  name: "release/v1.2.0",
+  name: "release/v2.1.0",
   column: 4,
   color: "#4CB944",
   column: release1.column,
@@ -203,18 +173,18 @@ release2
     lineDash: [3, 2],
     dotStrokeWidth: 5,
     dotColor: "white",
-    tag: "1.2.0",
+    tag: "2.1.0",
     displayTagBox: false,
     message: "Testing for release v1.2.0",
   });
 
 release2.merge(master, {
-  tag: "1.2.0",
-  displayTagBox: false,
+  tag: "v2.1.0",
+  displayTagBox: true,
 });
 
 let prodution1 = master.branch({
-  name: "production/v1.2.0",
+  name: "production/v2.1.0",
   column: 2,
   color: "#E55934",
   commitDefaultOptions: {
@@ -226,13 +196,13 @@ let prodution1 = master.branch({
 prodution1.commit({
   lineDash: [3, 2],
   color: "red",
-  tag: "1.2.0",
+  tag: "2.1.0",
   displayTagBox: false,
   message: "Testing for release v1.2.0",
 });
 
 let hotfix1 = prodution1.branch({
-  name: "hotfix/1.2.1",
+  name: "hotfix/2.1.1",
   column: 1,
   color: "red",
   commitDefaultOptions: {
@@ -243,31 +213,17 @@ let hotfix1 = prodution1.branch({
 });
 hotfix1.commit({
   message: "Hotfix for production version 1.2",
-  tag: "1.2.1",
+  tag: "2.1.1",
 });
 hotfix1.merge(prodution1, {
   message: "Merge hotfix/1.2.1 into production/1.2.0",
-  tag: "v1.2.1",
+  tag: "v2.1.1",
 });
 prodution1.merge(master, {
   message: "Merge production/1.2.1 into master.",
-  tag: "v1.2.1",
+  tag: "v2.1.1",
 });
 master.merge(develop, {
   message: "Merge master into develop.",
-  tag: "1.2.1",
   displayTagBox: false,
 });
-develop.merge(feature2, {
-  message: "Merge develop into feature/2.",
-  tag: "1.2.1",
-  displayTagBox: false,
-})
-
-feature2
-  .commit({
-    lineDash: [3, 2],
-    dotColor: "white",
-    dotStrokeWidth: 5,
-    message: "Unfinished feature branch."
-  })
